@@ -1,0 +1,19 @@
+# 各パッケージから依存して良いパッケージ（いずれかのパッケージに前方一致したらOK）
+# これ以外のパッケージに依存していた場合はエラーを出力する
+# strings 等、内部パッケージはデフォルトで無視する
+
+# ui 層から依存して良いパッケージの一覧
+"github.com/tomoemon/assert-dep/sampleProject/ui" = [
+    # 空にすると infra 層への依存が存在するのでエラーになる
+]
+
+# infra 層から依存して良いパッケージの一覧
+"github.com/tomoemon/assert-dep/sampleProject/infra" = [
+    "github.com/tomoemon/assert-dep/sampleProject/domain",
+    "github.com/tomoemon/assert-dep/sampleProject/infra",
+]
+
+# domain 層から依存して良いパッケージの一覧
+"github.com/tomoemon/assert-dep/sampleProject/domain" = [
+    "github.com/tomoemon/assert-dep/sampleProject/domain",
+]

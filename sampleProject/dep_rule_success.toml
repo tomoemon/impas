@@ -1,20 +1,19 @@
-# 各パッケージから依存して良いパッケージ（いずれかのパッケージに前方一致したらOK）
-# これ以外のパッケージに依存していた場合はエラーを出力する
-# strings 等、内部パッケージはデフォルトで無視する
+# If a prefix of an imported package name doesn't match any name written in an array,
+# assertion will be failed.
 
-# ui 層から依存して良いパッケージの一覧
+# Packages which can be imported from ui package
 "github.com/tomoemon/assert-dep/sampleProject/ui" = [
     "github.com/tomoemon/assert-dep/sampleProject/domain",
     "github.com/tomoemon/assert-dep/sampleProject/infra",
 ]
 
-# infra 層から依存して良いパッケージの一覧
+# Packages which can be imported from infra package
 "github.com/tomoemon/assert-dep/sampleProject/infra" = [
     "github.com/tomoemon/assert-dep/sampleProject/domain",
     "github.com/tomoemon/assert-dep/sampleProject/infra",
 ]
 
-# domain 層から依存して良いパッケージの一覧
+# Packages which can be imported from domain package
 "github.com/tomoemon/assert-dep/sampleProject/domain" = [
     "github.com/tomoemon/assert-dep/sampleProject/domain",
 ]

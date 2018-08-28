@@ -12,6 +12,10 @@ Ensure `$GOPATH` is set within your shell and your project is located in `$GOPAT
 
 # Example usage
 
+First, prepare a dependency rule file like below
+
+https://github.com/tomoemon/assert-dep/blob/master/sampleProject/dep_rule_success.toml
+
 Following command will succeed
 ```shell
 assert-dep -config sampleProject/dep_rule_success.toml -root github.com/tomoemon/assert-dep/sampleProject

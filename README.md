@@ -12,12 +12,14 @@ Ensure `$GOPATH` is set within your shell and your project is located in `$GOPAT
 
 # Example usage
 
-Following command is successs example
+Following command will succeed
 ```shell
 assert-dep -config sampleProject/dep_rule_success.toml -root github.com/tomoemon/assert-dep/sampleProject
 ```
+![sample_success.png](https://raw.githubusercontent.com/tomoemon/assert-dep/master/docs/sample_success.png)
 
-Following command is failure example
+Following command will fail (exit status: 1)
 ```shell
 assert-dep -config sampleProject/dep_rule_error.toml -root github.com/tomoemon/assert-dep/sampleProject
 ```
+![sample_error.png](https://raw.githubusercontent.com/tomoemon/assert-dep/master/docs/sample_error.png)

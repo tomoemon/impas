@@ -1,9 +1,7 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"github.com/BurntSushi/toml"
 	"github.com/KyleBanks/depth"
 	"github.com/fatih/color"
 	"golang.org/x/crypto/ssh/terminal"
@@ -19,38 +17,20 @@ func exitError(msg string) {
 	os.Exit(1)
 }
 
-var (
-	optConfigFile          = flag.String("config", "./impas.toml", "config file name which includes dependency rules")
-	optProjectRoot         = flag.String("root", "", `project root path from $GOROOT/src. eg. "github.com/tomoemon/impas"`)
-	optIgnoreOtherProjects = flag.Bool("ignoreOther", true, "ignore importing packages NOT includend in the root project")
-	optMaxDepth            = flag.Int("maxDepth", 1, "pass 0 if you want to assert recurcively")
-)
-
 func main() {
-	flag.Parse()
-
 	// ターミナルに出力する場合のみカラー出力する
 	color.NoColor = !terminal.IsTerminal(int(os.Stdout.Fd()))
 
-	if *optProjectRoot == "" {
-		flag.Usage()
-		exitError("pass a project_root")
-	}
-
-	*optProjectRoot = strings.TrimRight(*optProjectRoot, "/")
-
-	var configData map[string][]string
-	_, err := toml.DecodeFile(*optConfigFile, &configData)
+	config, err := NewConfig()
 	if err != nil {
-		fmt.Printf("error: %+v\n", err)
-		os.Exit(1)
+		exitError(err.Error())
 	}
 
 	foundError := false
-	for fromOriginalPath, allowedPackages := range configData {
+	for _, c := range config.Constraint {
 		// "./hoge/fuga" 形式を "github.com/tomoemon/hoge/fuga" 形式に統一する
-		fromOriginalPath = normalizePackagePath(fromOriginalPath, *optProjectRoot)
-		allowedPackages = normalizePackagePaths(allowedPackages, *optProjectRoot)
+		fromOriginalPath := normalizePackagePath(c.From, config.Root)
+		allowedPackages := normalizePackagePaths(c.Allow, config.Root)
 
 		fromPaths, err := expandPackagePath(fromOriginalPath)
 		if err != nil {
@@ -59,7 +39,7 @@ func main() {
 		for _, fromPath := range fromPaths {
 
 			t := depth.Tree{
-				MaxDepth: *optMaxDepth,
+				MaxDepth: config.MaxDepth(),
 			}
 			err = t.Resolve(fromPath)
 			if len(fromPaths) > 1 && err == depth.ErrRootPkgNotResolved {
@@ -69,7 +49,7 @@ func main() {
 			}
 			fmt.Printf("# %s\n", fromPath)
 			for _, dep := range t.Root.Deps {
-				if e := validate(dep, nil, *optProjectRoot, allowedPackages, *optIgnoreOtherProjects, true); e != nil {
+				if e := validate(dep, nil, *optProjectRoot, allowedPackages, config.IgnoreOther, true); e != nil {
 					printResult(false, e.Error())
 					foundError = true
 				} else {

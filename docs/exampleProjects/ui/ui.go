@@ -5,6 +5,7 @@ import (
 	"github.com/tomoemon/impas/docs/exampleProjects/infra"
 )
 
+//noinspection GoUnusedExportedFunction
 func PrintUser(id string) {
 	repo := infra.UserRepoImpl{}
 	user := repo.Get(id)

@@ -29,10 +29,10 @@ Following command will succeed
 ```shell
 impas -config sampleProject/dep_rule_success.toml -root github.com/tomoemon/impas/sampleProject
 ```
-![sample_success.png](https://raw.githubusercontent.com/tomoemon/impas/master/docs/sample_success.png)
+<img src="https://raw.githubusercontent.com/tomoemon/impas/master/docs/sample_success.png" width=448>
 
 Following command will fail (exit status: 1)
 ```shell
 impas -config sampleProject/dep_rule_error.toml -root github.com/tomoemon/impas/sampleProject
 ```
-![sample_error.png](https://raw.githubusercontent.com/tomoemon/impas/master/docs/sample_error.png)
+<img src="https://raw.githubusercontent.com/tomoemon/impas/master/docs/sample_error.png" width=600>

@@ -1,5 +1,5 @@
 # project root path from $GOROOT/src. eg. "github.com/tomoemon/impas"
-root = "github.com/tomoemon/impas/docs/exampleProjects"
+root = "github.com/tomoemon/impas/docs/exampleProject"
 
 # ignore imported packages NOT includend in the root project if true
 ignoreOther = true
@@ -14,12 +14,10 @@ recursive = false
 # You can write a path relatively from the project root
 # Or write a path absolutely from the $GOPATH/src
 [[constraint]]
-from = "github.com/tomoemon/impas/docs/exampleProjects/ui"
+from = "github.com/tomoemon/impas/docs/exampleProject/ui"
 allow = [
-    "github.com/tomoemon/impas/docs/exampleProjects/domain",
-    "github.com/tomoemon/impas/docs/exampleProjects/infra",
+    # As there are dependencies from ui, assertion will be failed
 ]
-
 
 # Packages which can be imported from infra package
 [[constraint]]
@@ -31,7 +29,7 @@ allow = [
 
 # Packages which can be imported from domain package
 [[constraint]]
-from = "github.com/tomoemon/impas/docs/exampleProjects/domain"
+from = "github.com/tomoemon/impas/docs/exampleProject/domain"
 allow = [
-    "github.com/tomoemon/impas/docs/exampleProjects/domain",
+    "github.com/tomoemon/impas/docs/exampleProject/domain",
 ]

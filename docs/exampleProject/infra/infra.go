@@ -1,6 +1,6 @@
 package infra
 
-import "github.com/tomoemon/impas/docs/exampleProjects/domain"
+import "github.com/tomoemon/impas/docs/exampleProject/domain"
 
 type UserRepoImpl struct {
 }

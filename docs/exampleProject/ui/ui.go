@@ -2,7 +2,7 @@ package ui
 
 import (
 	"fmt"
-	"github.com/tomoemon/impas/docs/exampleProjects/infra"
+	"github.com/tomoemon/impas/docs/exampleProject/infra"
 )
 
 //noinspection GoUnusedExportedFunction

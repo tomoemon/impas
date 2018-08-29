@@ -20,10 +20,10 @@ func exitError(msg string) {
 }
 
 var (
-	optConfigFile          = flag.String("config", "./assert-dep.toml", "config file")
-	optProjectRoot         = flag.String("root", "", `project root path from $GOROOT/src. eg. "github.com/tomoemon/foobar"`)
-	optIgnoreOtherProjects = flag.Bool("ignoreOther", true, "ignore importing projects except targeted project")
-	optMaxDepth            = flag.Int("maxDepth", 1, "0 if you want to assert recurcively")
+	optConfigFile          = flag.String("config", "./impas.toml", "config file name which includes dependency rules")
+	optProjectRoot         = flag.String("root", "", `project root path from $GOROOT/src. eg. "github.com/tomoemon/impas"`)
+	optIgnoreOtherProjects = flag.Bool("ignoreOther", true, "ignore importing packages NOT includend in the root project")
+	optMaxDepth            = flag.Int("maxDepth", 1, "pass 0 if you want to assert recurcively")
 )
 
 func main() {
@@ -34,7 +34,7 @@ func main() {
 
 	if *optProjectRoot == "" {
 		flag.Usage()
-		exitError("specify project_root")
+		exitError("pass a project_root")
 	}
 
 	*optProjectRoot = strings.TrimRight(*optProjectRoot, "/")

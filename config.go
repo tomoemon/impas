@@ -7,10 +7,10 @@ import (
 
 var (
 	// オプションを指定したときとしていないときの区別が難しいのですべて String で受ける
-	optConfigFile          = flag.String("config", "./impas.toml", "config file name which includes dependency rules")
-	optProjectRoot         = flag.String("root", "", `project root path from $GOROOT/src. eg. "github.com/tomoemon/impas"`)
-	optIgnoreOtherProjects = flag.String("ignoreOther", "", "ignore imported packages NOT includend in the Root project if true")
-	optRecursive           = flag.String("recursive", "", "search imported packages recursively if true")
+	optConfigFile     = flag.String("config", "./impas.toml", "config file name which includes dependency rules")
+	optProjectRoot    = flag.String("root", "", `project root path from $GOROOT/src. eg. "github.com/tomoemon/impas"`)
+	optIgnoreExternal = flag.String("ignoreExternal", "", "ignore imported packages NOT includend in the Root project if true")
+	optRecursive      = flag.String("recursive", "", "search imported packages recursively if true")
 )
 
 type Constraint struct {
@@ -19,10 +19,10 @@ type Constraint struct {
 }
 
 type Config struct {
-	Constraint  []Constraint
-	Root        string
-	IgnoreOther bool
-	Recursive   bool
+	Constraint     []Constraint
+	Root           string
+	IgnoreExternal bool
+	Recursive      bool
 }
 
 func (c *Config) MaxDepth() int {
@@ -47,11 +47,11 @@ func ApplyCommandLineOptions(c *Config) {
 	if *optProjectRoot != "" {
 		c.Root = *optProjectRoot
 	}
-	if *optIgnoreOtherProjects != "" {
-		if *optIgnoreOtherProjects == "false" {
-			c.IgnoreOther = false
+	if *optIgnoreExternal != "" {
+		if *optIgnoreExternal == "false" {
+			c.IgnoreExternal = false
 		} else {
-			c.IgnoreOther = true
+			c.IgnoreExternal = true
 		}
 	}
 	if *optRecursive != "" {

@@ -2,7 +2,7 @@
 root = "github.com/tomoemon/impas/docs/exampleProject"
 
 # ignore imported packages NOT includend in the root project if true
-ignoreOther = true
+ignoreExternal = true
 
 # search imported packages recursively if true
 recursive = false

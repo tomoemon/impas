@@ -49,7 +49,7 @@ func main() {
 			}
 			fmt.Printf("# %s\n", fromPath)
 			for _, dep := range t.Root.Deps {
-				if e := validate(dep, nil, *optProjectRoot, allowedPackages, config.IgnoreOther, true); e != nil {
+				if e := validate(dep, nil, *optProjectRoot, allowedPackages, config.IgnoreExternal, true); e != nil {
 					printResult(false, e.Error())
 					foundError = true
 				} else {

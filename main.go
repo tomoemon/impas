@@ -48,6 +48,10 @@ func main() {
 
 	foundError := false
 	for fromOriginalPath, allowedPackages := range configData {
+		// "./hoge/fuga" 形式を "github.com/tomoemon/hoge/fuga" 形式に統一する
+		fromOriginalPath = normalizePackagePath(fromOriginalPath, *optProjectRoot)
+		allowedPackages = normalizePackagePaths(allowedPackages, *optProjectRoot)
+
 		fromPaths, err := expandPackagePath(fromOriginalPath)
 		if err != nil {
 			exitError(err.Error())
@@ -91,6 +95,21 @@ func printResult(isOk bool, message string) {
 		c := color.New(color.FgRed)
 		c.Printf("[NG] %s\n", message)
 	}
+}
+
+func normalizePackagePath(p string, projectRoot string) string {
+	if strings.HasPrefix(p, "./") {
+		return strings.Replace(path.Join(projectRoot, p), "\\", "/", -1)
+	}
+	return p
+}
+
+func normalizePackagePaths(paths []string, projectRoot string) []string {
+	result := make([]string, 0, len(paths))
+	for _, p := range paths {
+		result = append(result, normalizePackagePath(p, projectRoot))
+	}
+	return result
 }
 
 func expandPackagePath(p string) ([]string, error) {

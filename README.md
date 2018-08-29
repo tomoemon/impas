@@ -7,13 +7,17 @@ Most of practical projects consist of some kinds of layers, like UI, SERVICE, DA
 
 impas will make inter-packages dependency rules explicit.
 
+# Prerequisites
+
+- Using [dep](https://github.com/golang/dep) vendoring
+- Your project is located in `$GOPATH`
+
 # Install
 
 ```shell
 go get github.com/tomoemon/impas
 ```
 
-Ensure `$GOPATH` is set within your shell and your project is located in `$GOPATH`.
 
 # Usage examples
 

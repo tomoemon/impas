@@ -2,15 +2,17 @@
 # assertion will be failed.
 
 # Packages which can be imported from ui package
+# You can write a path relatively from the project root
+# Or write a path absolutely from the $GOPATH/src
 "github.com/tomoemon/impas/docs/exampleProjects/ui" = [
     "github.com/tomoemon/impas/docs/exampleProjects/domain",
     "github.com/tomoemon/impas/docs/exampleProjects/infra",
 ]
 
 # Packages which can be imported from infra package
-"github.com/tomoemon/impas/docs/exampleProjects/infra" = [
-    "github.com/tomoemon/impas/docs/exampleProjects/domain",
-    "github.com/tomoemon/impas/docs/exampleProjects/infra",
+"./infra" = [
+    "./domain",
+    "./infra",
 ]
 
 # Packages which can be imported from domain package

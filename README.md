@@ -23,16 +23,16 @@ go get github.com/tomoemon/impas
 
 First, prepare a dependency rule file like below
 
-https://github.com/tomoemon/impas/blob/master/sampleProject/dep_rule_success.toml
+https://github.com/tomoemon/impas/blob/master/docs/sample_config_success.toml
 
 Following command will succeed
 ```shell
-impas -config sampleProject/dep_rule_success.toml -root github.com/tomoemon/impas/sampleProject
+impas -config docs/sample_config_success.toml
 ```
-<img src="https://raw.githubusercontent.com/tomoemon/impas/master/docs/sample_success.png" width=448>
+<img src="https://raw.githubusercontent.com/tomoemon/impas/master/docs/images/sample_succeeded_result.png" width=448>
 
 Following command will fail (exit status: 1)
 ```shell
-impas -config sampleProject/dep_rule_error.toml -root github.com/tomoemon/impas/sampleProject
+impas -config docs/sample_config_error.toml
 ```
-<img src="https://raw.githubusercontent.com/tomoemon/impas/master/docs/sample_error.png" width=600>
+<img src="https://raw.githubusercontent.com/tomoemon/impas/master/docs/images/sample_failed_result.png" width=600>

@@ -2,7 +2,7 @@ package ui
 
 import (
 	"fmt"
-	"github.com/tomoemon/assert-dep/sampleProject/infra"
+	"github.com/tomoemon/impas/docs/exampleProjects/infra"
 )
 
 func PrintUser(id string) {

@@ -1,0 +1,18 @@
+# If a prefix of an imported package name doesn't match any name written in an array,
+# assertion will be failed.
+
+# Packages which can be imported from ui package
+"github.com/tomoemon/impas/docs/exampleProjects/ui" = [
+    # As there are dependencies from ui, assertion will be failed
+]
+
+# Packages which can be imported from infra package
+"github.com/tomoemon/impas/docs/exampleProjects/infra" = [
+    "github.com/tomoemon/impas/docs/exampleProjects/domain",
+    "github.com/tomoemon/impas/docs/exampleProjects/infra",
+]
+
+# Packages which can be imported from domain package
+"github.com/tomoemon/impas/docs/exampleProjects/domain" = [
+    "github.com/tomoemon/impas/docs/exampleProjects/domain",
+]

@@ -1,6 +1,6 @@
 package infra
 
-import "github.com/tomoemon/assert-dep/sampleProject/domain"
+import "github.com/tomoemon/impas/docs/exampleProjects/domain"
 
 type UserRepoImpl struct {
 }

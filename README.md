@@ -5,7 +5,7 @@ This command-line tool enables you to validate inter-packages dependencies withi
 
 Most of practical projects consist of some kinds of layers, like UI, SERVICE, DAO, INFRA, ... etc. There are no problems if you develop the project by yourself because you should understand the whole project. On the other hand, team development may have some problems about understanding package dependency rules of the project. Especially, a new developer who doesn't know the whole project tends to write a code which breach the rule, because the rules are often implicit.
 
-impas will make inter-packages dependency rules explicit.
+Now, impas makes it explict!
 
 # Prerequisites
 

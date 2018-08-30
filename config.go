@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/BurntSushi/toml"
+	"strings"
 )
 
 var (
@@ -47,6 +48,8 @@ func ApplyCommandLineOptions(c *Config) {
 	if *optProjectRoot != "" {
 		c.Root = *optProjectRoot
 	}
+	c.Root = strings.Trim(c.Root, "/")
+
 	if *optIgnoreExternal != "" {
 		if *optIgnoreExternal == "false" {
 			c.IgnoreExternal = false

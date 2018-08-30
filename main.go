@@ -49,7 +49,7 @@ func main() {
 			}
 			fmt.Printf("# %s\n", fromPath)
 			for _, dep := range t.Root.Deps {
-				if e := validate(dep, nil, *optProjectRoot, allowedPackages, config.IgnoreExternal, true); e != nil {
+				if e := validate(dep, nil, config.Root, allowedPackages, config.IgnoreExternal, true); e != nil {
 					printResult(false, e.Error())
 					foundError = true
 				} else {
@@ -137,17 +137,17 @@ func (e *invalidImportError) Error() string {
 	return fmt.Sprintf("%s is imported\n%s", e.pkg.Name, strings.Join(result, "\n"))
 }
 
-func validate(pkg depth.Pkg, depStack []depth.Pkg, projectRoot string, allowedPackages []string, ignoreOther bool, ignoreInternal bool) error {
+func validate(pkg depth.Pkg, depStack []depth.Pkg, projectRoot string, allowedPackages []string, ignoreExternal bool, ignoreInternal bool) error {
 	newDepStack := append(depStack[:], pkg)
 
-	// golang 内部パッケージを無視するかどうか
-	if ignoreInternal && pkg.Internal {
-		return nil
-	}
-
-	// 外部パッケージの場合に無視するかどうか
-	if ignoreOther {
-		if !strings.HasPrefix(pkg.Name, projectRoot) || strings.HasPrefix(pkg.Name, projectRoot+"/vendor") {
+	if pkg.Internal {
+		// golang 内部パッケージ
+		if ignoreInternal {
+			return nil
+		}
+	} else if !strings.HasPrefix(pkg.Name, projectRoot) || strings.HasPrefix(pkg.Name, projectRoot+"/vendor") {
+		// 外部パッケージ
+		if ignoreExternal {
 			return nil
 		}
 	}
@@ -166,7 +166,7 @@ func validate(pkg depth.Pkg, depStack []depth.Pkg, projectRoot string, allowedPa
 
 	// 再帰的に allowedPackages の依存をチェックする
 	for _, dep := range pkg.Deps {
-		if e := validate(dep, newDepStack, projectRoot, allowedPackages, ignoreOther, ignoreInternal); e != nil {
+		if e := validate(dep, newDepStack, projectRoot, allowedPackages, ignoreExternal, ignoreInternal); e != nil {
 			return e
 		}
 	}

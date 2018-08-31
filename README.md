@@ -7,7 +7,7 @@ Most of practical projects consist of some kinds of layers, like UI, SERVICE, DA
 
 Now, impas makes it explict!
 
-<img src="https://raw.githubusercontent.com/tomoemon/impas/master/docs/images/impas.svg" width=448>
+<img src="https://raw.githubusercontent.com/tomoemon/impas/master/docs/images/impas.png" width=448>
 
 # Prerequisites
 

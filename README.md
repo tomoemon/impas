@@ -27,13 +27,13 @@ First, prepare a dependency rule file like below
 
 https://github.com/tomoemon/impas/blob/master/docs/sample_config_success.toml
 
-Following command will succeed
+Run following command
 ```shell
 impas -config docs/sample_config_success.toml
 ```
 <img src="https://raw.githubusercontent.com/tomoemon/impas/master/docs/images/sample_succeeded_result.png" width=448>
 
-Following command will fail (exit status: 1)
+If command fail, it returns `exit status 1`
 ```shell
 impas -config docs/sample_config_error.toml
 ```

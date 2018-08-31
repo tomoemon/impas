@@ -3,7 +3,7 @@
 impas is an IMPort ASsertion tool.
 This command-line tool enables you to validate inter-packages dependencies within your golang project.
 
-Most of practical projects consist of some kinds of layers, like UI, SERVICE, DAO, INFRA, ... etc. There are no problems if you develop the project by yourself because you should understand the whole project. On the other hand, team development may have some problems about understanding package dependency rules of the project. Especially, a new developer who doesn't know the whole project tends to write a code which breach the rule, because the rules are often implicit.
+Most of practical projects consist of some kinds of layers, like UI, SERVICE, DAO, INFRA, ... etc. There are no problems if you develop the project by yourself because you should understand the whole project. On the other hand, team development may have some problems about understanding package dependency rules of the project. Especially, a new developer who doesn't know the whole project tends to write a code which breach the rule, because such rules are often implicit.
 
 Now, impas makes it explict!
 

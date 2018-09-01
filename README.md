@@ -17,7 +17,7 @@ Now, impas makes it explict!
 # Install
 
 ```shell
-go get github.com/tomoemon/impas
+go get -u github.com/tomoemon/impas
 ```
 
 

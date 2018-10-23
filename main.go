@@ -98,6 +98,9 @@ func expandPackagePath(p string) ([]string, error) {
 		newRootPath := strings.TrimRight(path.Join(srcRoot, p), "*")
 		var dirList []string
 		err := filepath.Walk(newRootPath, func(path string, f os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
 			if f.IsDir() {
 				path = strings.TrimLeft(strings.Replace(path, srcRoot, "", -1), "/")
 				dirList = append(dirList, path)

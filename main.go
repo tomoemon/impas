@@ -1,12 +1,18 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"os"
 	"path"
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
+
+	"golang.org/x/sync/errgroup"
+	"golang.org/x/sync/semaphore"
 
 	"github.com/KyleBanks/depth"
 	"github.com/fatih/color"
@@ -32,6 +38,11 @@ func run() (bool, error) {
 	if err != nil {
 		return false, err
 	}
+
+	sem := semaphore.NewWeighted(config.Concurrency)
+	eg := errgroup.Group{}
+	showMutex := sync.Mutex{}
+
 	for _, c := range config.Constraint {
 		// "./hoge/fuga" 形式を "github.com/tomoemon/hoge/fuga" 形式に統一する
 		fromOriginalPath := normalizePackagePath(c.From, config.Root)
@@ -42,49 +53,72 @@ func run() (bool, error) {
 			return false, err
 		}
 		for _, fromPath := range fromPaths {
-			fmt.Printf("# %s\n", fromPath)
-			names, err := resolve(fromPath, allowedPackages, config)
-			if len(fromPaths) > 1 && err == depth.ErrRootPkgNotResolved {
-				continue
-			} else if err != nil {
-				if _, ok := err.(*invalidImportError); ok {
-					printResult(false, err.Error())
-					return false, nil
+			fromPath := fromPath
+			eg.Go(func() error {
+				if err := sem.Acquire(context.Background(), 1); err != nil {
+					return err
 				}
-				return false, err
-			}
-			for _, name := range names {
-				printResult(true, name)
-			}
-			fmt.Printf("\n")
+				defer sem.Release(1)
+
+				err := resolve(&showMutex, fromPath, allowedPackages, config)
+				if len(fromPaths) > 1 && err == depth.ErrRootPkgNotResolved {
+					return nil
+				} else if err != nil {
+					return err
+				}
+				return nil
+			})
 		}
+	}
+	if err := eg.Wait(); err != nil {
+		return false, err
 	}
 	return true, nil
 }
 
-func resolve(fromPath string, allowedPackages []string, config *Config) ([]string, error) {
+func resolve(showMutex *sync.Mutex, fromPath string, allowedPackages []string, config *Config) error {
 	depthTree := depth.Tree{
 		MaxDepth: config.MaxDepth(),
 	}
 	if err := depthTree.Resolve(fromPath); err != nil {
-		return nil, err
+		return err
 	}
-	names := make([]string, 0, len(depthTree.Root.Deps))
+
+	type resultType struct {
+		name string
+		err  error
+	}
+	result := make([]resultType, 0, len(depthTree.Root.Deps))
+	defer func() {
+		showMutex.Lock()
+		fmt.Printf("# %s\n", fromPath)
+		for _, r := range result {
+			if r.err != nil {
+				printResult(false, r.err.Error())
+			} else {
+				printResult(true, r.name)
+			}
+		}
+		fmt.Printf("\n")
+		showMutex.Unlock()
+	}()
 	for _, dep := range depthTree.Root.Deps {
-		if err := validate(dep, nil, config.Root, allowedPackages, config.IgnoreExternal, true); err != nil {
-			return nil, err
-		} else {
-			names = append(names, dep.Name)
+		err := validate(dep, nil, config.Root, allowedPackages, config.IgnoreExternal, true)
+		result = append(result, resultType{
+			name: dep.Name,
+			err:  err,
+		})
+		if err != nil {
+			return errors.New("assertion failed")
 		}
 	}
-	return names, nil
+	return nil
 }
 
 func printResult(isOk bool, message string) {
 	if isOk {
 		c := color.New(color.FgGreen)
-		c.Printf("[OK] ")
-		fmt.Println(message)
+		c.Printf("[OK] %s\n", message)
 	} else {
 		c := color.New(color.FgRed)
 		c.Printf("[NG] %s\n", message)

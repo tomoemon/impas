@@ -2,8 +2,9 @@ package main
 
 import (
 	"flag"
-	"github.com/BurntSushi/toml"
 	"strings"
+
+	"github.com/BurntSushi/toml"
 )
 
 var (
@@ -12,6 +13,7 @@ var (
 	optProjectRoot    = flag.String("root", "", `project root path from $GOROOT/src. eg. "github.com/tomoemon/impas"`)
 	optIgnoreExternal = flag.String("ignoreExternal", "", "ignore imported packages NOT includend in the Root project if true")
 	optRecursive      = flag.String("recursive", "", "search imported packages recursively if true")
+	optConcurrency    = flag.Int64("concurrency", 1, "number of concurrency")
 )
 
 type Constraint struct {
@@ -24,6 +26,7 @@ type Config struct {
 	Root           string
 	IgnoreExternal bool
 	Recursive      bool
+	Concurrency    int64
 }
 
 func (c *Config) MaxDepth() int {
@@ -64,6 +67,7 @@ func ApplyCommandLineOptions(c *Config) {
 			c.Recursive = true
 		}
 	}
+	c.Concurrency = *optConcurrency
 }
 
 func LoadTOMLConfig(fileName string) (*Config, error) {

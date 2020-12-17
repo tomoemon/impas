@@ -2,31 +2,36 @@ package main
 
 import (
 	"fmt"
-	"github.com/KyleBanks/depth"
-	"github.com/fatih/color"
-	"golang.org/x/crypto/ssh/terminal"
 	"os"
 	"path"
 	"path/filepath"
 	"sort"
 	"strings"
-)
 
-func exitError(msg string) {
-	fmt.Printf("%v\n", msg)
-	os.Exit(1)
-}
+	"github.com/KyleBanks/depth"
+	"github.com/fatih/color"
+	"github.com/mattn/go-isatty"
+)
 
 func main() {
 	// ターミナルに出力する場合のみカラー出力する
-	color.NoColor = !terminal.IsTerminal(int(os.Stdout.Fd()))
+	color.NoColor = !isatty.IsTerminal(os.Stdout.Fd())
 
+	if succeeded, err := run(); err != nil {
+		fmt.Printf("%+v\n", err.Error())
+		os.Exit(1)
+	} else if succeeded {
+		os.Exit(0)
+	} else {
+		os.Exit(1)
+	}
+}
+
+func run() (bool, error) {
 	config, err := NewConfig()
 	if err != nil {
-		exitError(err.Error())
+		return false, err
 	}
-
-	foundError := false
 	for _, c := range config.Constraint {
 		// "./hoge/fuga" 形式を "github.com/tomoemon/hoge/fuga" 形式に統一する
 		fromOriginalPath := normalizePackagePath(c.From, config.Root)
@@ -34,36 +39,45 @@ func main() {
 
 		fromPaths, err := expandPackagePath(fromOriginalPath)
 		if err != nil {
-			exitError(err.Error())
+			return false, err
 		}
 		for _, fromPath := range fromPaths {
-
-			t := depth.Tree{
-				MaxDepth: config.MaxDepth(),
-			}
-			err = t.Resolve(fromPath)
+			fmt.Printf("# %s\n", fromPath)
+			names, err := resolve(fromPath, allowedPackages, config)
 			if len(fromPaths) > 1 && err == depth.ErrRootPkgNotResolved {
 				continue
 			} else if err != nil {
-				exitError(err.Error() + ": " + fromPath)
-			}
-			fmt.Printf("# %s\n", fromPath)
-			for _, dep := range t.Root.Deps {
-				if e := validate(dep, nil, config.Root, allowedPackages, config.IgnoreExternal, true); e != nil {
-					printResult(false, e.Error())
-					foundError = true
-				} else {
-					printResult(true, dep.Name)
+				if _, ok := err.(*invalidImportError); ok {
+					printResult(false, err.Error())
+					return false, nil
 				}
+				return false, err
+			}
+			for _, name := range names {
+				printResult(true, name)
 			}
 			fmt.Printf("\n")
 		}
 	}
-	if foundError {
-		os.Exit(1)
-	} else {
-		os.Exit(0)
+	return true, nil
+}
+
+func resolve(fromPath string, allowedPackages []string, config *Config) ([]string, error) {
+	depthTree := depth.Tree{
+		MaxDepth: config.MaxDepth(),
 	}
+	if err := depthTree.Resolve(fromPath); err != nil {
+		return nil, err
+	}
+	names := make([]string, 0, len(depthTree.Root.Deps))
+	for _, dep := range depthTree.Root.Deps {
+		if err := validate(dep, nil, config.Root, allowedPackages, config.IgnoreExternal, true); err != nil {
+			return nil, err
+		} else {
+			names = append(names, dep.Name)
+		}
+	}
+	return names, nil
 }
 
 func printResult(isOk bool, message string) {
@@ -169,8 +183,8 @@ func validate(pkg depth.Pkg, depStack []depth.Pkg, projectRoot string, allowedPa
 
 	// 再帰的に allowedPackages の依存をチェックする
 	for _, dep := range pkg.Deps {
-		if e := validate(dep, newDepStack, projectRoot, allowedPackages, ignoreExternal, ignoreInternal); e != nil {
-			return e
+		if err := validate(dep, newDepStack, projectRoot, allowedPackages, ignoreExternal, ignoreInternal); err != nil {
+			return err
 		}
 	}
 	return nil

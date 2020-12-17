@@ -9,11 +9,6 @@ Now, impas makes it explict!
 
 <img src="https://raw.githubusercontent.com/tomoemon/impas/master/docs/images/impas.png" width=448>
 
-# Prerequisites
-
-- Using [dep](https://github.com/golang/dep) vendoring
-- Your project is located in `$GOPATH`
-
 # Install
 
 ```shell

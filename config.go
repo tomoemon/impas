@@ -2,7 +2,9 @@ package main
 
 import (
 	"flag"
-	"strings"
+	"path/filepath"
+
+	"golang.org/x/xerrors"
 
 	"github.com/BurntSushi/toml"
 )
@@ -10,8 +12,7 @@ import (
 var (
 	// オプションを指定したときとしていないときの区別が難しいのですべて String で受ける
 	optConfigFile     = flag.String("config", "./impas.toml", "config file name which includes dependency rules")
-	optProjectRoot    = flag.String("root", "", `project root path from $GOROOT/src. eg. "github.com/tomoemon/impas"`)
-	optIgnoreExternal = flag.String("ignoreExternal", "", "ignore imported packages NOT includend in the Root project if true")
+	optIgnoreExternal = flag.String("ignoreExternal", "", "ignore imported packages NOT included in the Root project if true")
 	optRecursive      = flag.String("recursive", "", "search imported packages recursively if true")
 	optConcurrency    = flag.Int64("concurrency", 1, "number of concurrency")
 )
@@ -22,8 +23,8 @@ type Constraint struct {
 }
 
 type Config struct {
+	AbsPath        string
 	Constraint     []Constraint
-	Root           string
 	IgnoreExternal bool
 	Recursive      bool
 	Concurrency    int64
@@ -39,20 +40,15 @@ func (c *Config) MaxDepth() int {
 func NewConfig() (*Config, error) {
 	flag.Parse()
 
-	c, err := LoadTOMLConfig(*optConfigFile)
+	c, err := loadTomlConfig(*optConfigFile)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf(": %w", err)
 	}
-	ApplyCommandLineOptions(c)
+	applyCommandLineOptions(c)
 	return c, nil
 }
 
-func ApplyCommandLineOptions(c *Config) {
-	if *optProjectRoot != "" {
-		c.Root = *optProjectRoot
-	}
-	c.Root = strings.Trim(c.Root, "/")
-
+func applyCommandLineOptions(c *Config) {
 	if *optIgnoreExternal != "" {
 		if *optIgnoreExternal == "false" {
 			c.IgnoreExternal = false
@@ -70,11 +66,16 @@ func ApplyCommandLineOptions(c *Config) {
 	c.Concurrency = *optConcurrency
 }
 
-func LoadTOMLConfig(fileName string) (*Config, error) {
+func loadTomlConfig(fileName string) (*Config, error) {
 	var config Config
 	_, err := toml.DecodeFile(fileName, &config)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf(": %w", err)
 	}
+	absPath, err := filepath.Abs(fileName)
+	if err != nil {
+		return nil, xerrors.Errorf(": %w", err)
+	}
+	config.AbsPath = filepath.Clean(absPath)
 	return &config, nil
 }

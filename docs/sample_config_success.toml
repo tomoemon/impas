@@ -1,6 +1,3 @@
-# project root path from $GOROOT/src. eg. "github.com/tomoemon/impas"
-root = "github.com/tomoemon/impas/docs/exampleProject"
-
 # ignore imported packages NOT includend in the root project if true
 ignoreExternal = true
 
@@ -23,10 +20,10 @@ allow = [
 
 # Packages which can be imported from infra package
 [[constraint]]
-from = "./infra"
+from = "./docs/exampleProject/infra"
 allow = [
-    "./domain",
-    "./infra",
+    "./docs/exampleProject/domain",
+    "./docs/exampleProject/infra",
 ]
 
 # Packages which can be imported from domain package

@@ -43,7 +43,6 @@ func run() (bool, error) {
 	sem := semaphore.NewWeighted(config.Concurrency)
 	eg := errgroup.Group{}
 	showMutex := sync.Mutex{}
-	foundError := false
 
 	for _, c := range config.Constraint {
 		// "./hoge/fuga" 形式を "github.com/tomoemon/hoge/fuga" 形式に統一する
@@ -75,10 +74,11 @@ func run() (bool, error) {
 
 				showMutex.Lock()
 				fmt.Printf("# %s\n", fromPath)
+				var foundError error
 				for _, r := range result {
 					if r.err != nil {
 						printResult(false, r.err.Error())
-						foundError = true
+						foundError = r.err
 					} else {
 						printResult(true, r.name)
 					}
@@ -86,15 +86,12 @@ func run() (bool, error) {
 				fmt.Printf("\n")
 				showMutex.Unlock()
 
-				return nil
+				return foundError
 			})
 		}
 	}
 	if err := eg.Wait(); err != nil {
 		return false, xerrors.Errorf(": %w", err)
-	}
-	if foundError {
-		return false, nil
 	}
 	return true, nil
 }

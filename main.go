@@ -74,9 +74,11 @@ func run() (bool, error) {
 
 				showMutex.Lock()
 				fmt.Printf("# %s\n", fromPath)
+				var foundError error
 				for _, r := range result {
 					if r.err != nil {
 						printResult(false, r.err.Error())
+						foundError = r.err
 					} else {
 						printResult(true, r.name)
 					}
@@ -84,7 +86,7 @@ func run() (bool, error) {
 				fmt.Printf("\n")
 				showMutex.Unlock()
 
-				return nil
+				return foundError
 			})
 		}
 	}
